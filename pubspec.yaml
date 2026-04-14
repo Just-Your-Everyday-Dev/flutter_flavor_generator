@@ -1,7 +1,8 @@
 name: flutter_flavor_gen
 description: CLI tool to generate Flutter flavors — Dart files, Android build.gradle, and iOS schemes.
 version: 0.1.0
-# homepage: https://github.com/yourusername/flutter_flavor_gen
+repository: https://github.com/Just-Your-Everyday-Dev/flutter_flavor_generator
+homepage: https://github.com/Just-Your-Everyday-Dev/flutter_flavor_generator
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

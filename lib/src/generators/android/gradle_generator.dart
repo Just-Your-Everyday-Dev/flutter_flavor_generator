@@ -26,7 +26,7 @@ class GradleGenerator {
       final toAdd = flavors.where((f) => !existing.contains(f.name)).toList();
 
       if (toAdd.isEmpty) {
-        print('  ⏭️  build.gradle already up to date.');
+        print('build.gradle already up to date.');
         return;
       }
 
@@ -35,7 +35,7 @@ class GradleGenerator {
     }
 
     File(gradlePath).writeAsStringSync(content);
-    print('  ✅ android/app/build.gradle updated');
+    print('android/app/build.gradle updated');
   }
 
   static String _buildFullBlock(List<Flavor> flavors) {

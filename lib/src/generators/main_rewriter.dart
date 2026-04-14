@@ -61,7 +61,7 @@ class MainRewriter {
     }
     File('${file.parent.path}/main_common.dart').writeAsStringSync(updated);
     file.deleteSync();
-    print('  ✅ main.dart → main_common.dart, main() → mainCommon()');
+    print('main.dart -> main_common.dart');
     return true;
   }
 }
