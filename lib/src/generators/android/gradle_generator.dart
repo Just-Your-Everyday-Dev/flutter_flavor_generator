@@ -9,6 +9,7 @@ class GradleGenerator {
       return;
     }
 
+    final isKts = gradlePath.endsWith('.kts');
     var content = File(gradlePath).readAsStringSync();
     final existingBlock = GradleParser.findBlock(content, 'productFlavors');
 
@@ -18,7 +19,7 @@ class GradleGenerator {
         print('No android { } block found in build.gradle — skipping.');
         return;
       }
-      final injection = _buildFullBlock(flavors);
+      final injection = _buildFullBlock(flavors, isKts: isKts);
       content = '${content.substring(0, androidBlock.end - 1)}\n$injection\n${content.substring(androidBlock.end - 1)}';
     } else {
       final blockContent = content.substring(existingBlock.start, existingBlock.end);
@@ -30,7 +31,7 @@ class GradleGenerator {
         return;
       }
 
-      final newEntries = toAdd.map(_buildFlavorEntry).join('\n');
+      final newEntries = toAdd.map((f) => _buildFlavorEntry(f, isKts: isKts)).join('\n');
       content = '${content.substring(0, existingBlock.end - 1)}\n$newEntries${content.substring(existingBlock.end - 1)}';
     }
 
@@ -38,13 +39,26 @@ class GradleGenerator {
     print('android/app/build.gradle updated');
   }
 
-  static String _buildFullBlock(List<Flavor> flavors) {
-    final entries = flavors.map(_buildFlavorEntry).join('\n');
+  static String _buildFullBlock(List<Flavor> flavors, {required bool isKts}) {
+    final entries = flavors.map((f) => _buildFlavorEntry(f, isKts: isKts)).join('\n');
+    if (isKts) {
+      return '    flavorDimensions += listOf("app")\n\n    productFlavors {\n$entries\n    }';
+    }
     return '    flavorDimensions "app"\n\n    productFlavors {\n$entries\n    }';
   }
 
-  static String _buildFlavorEntry(Flavor flavor) {
+  static String _buildFlavorEntry(Flavor flavor, {required bool isKts}) {
     final appName = _getAppName(flavor);
+    if (isKts) {
+      final suffix = flavor.name == 'prod'
+          ? ''
+          : '            applicationIdSuffix = ".${flavor.name}"\n';
+      return '        create("${flavor.name}") {\n'
+          '            dimension = "app"\n'
+          '$suffix'
+          '            resValue("string", "app_name", "$appName")\n'
+          '        }';
+    }
     final suffix = flavor.name == 'prod'
         ? ''
         : '            applicationIdSuffix ".${flavor.name}"\n';

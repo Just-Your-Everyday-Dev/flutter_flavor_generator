@@ -43,10 +43,20 @@ class XcschemeGenerator {
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
+   <TestAction
+      buildConfiguration="Debug-$flavorName"
+      selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB"
+      lldbInitFile = "\$(SRCROOT)/Flutter/ephemeral/flutter_lldbinit"
+      shouldUseLaunchSchemeArgsEnv="YES">
+      <Testables>
+      </Testables>
+   </TestAction>
    <LaunchAction
       buildConfiguration="Debug-$flavorName"
       selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB"
+      lldbInitFile = "\$(SRCROOT)/Flutter/ephemeral/flutter_lldbinit"
       launchStyle="0"
       useCustomWorkingDirectory="NO"
       ignoresPersistentStateOnLaunch="NO"
@@ -63,6 +73,24 @@ class XcschemeGenerator {
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
+   <ProfileAction
+      buildConfiguration="Profile-$flavorName"
+      shouldUseLaunchSchemeArgsEnv="YES"
+      savedToolIdentifier=""
+      useCustomWorkingDirectory="NO"
+      debugDocumentVersioning="YES">
+      <BuildableProductRunnable runnableDebuggingMode="0">
+         <BuildableReference
+            BuildableIdentifier="primary"
+            BlueprintIdentifier="97C146ED1CF9000F007C117D"
+            BuildableName="Runner.app"
+            BlueprintName="Runner"
+            ReferencedContainer="container:Runner.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction buildConfiguration="Debug-$flavorName">
+   </AnalyzeAction>
    <ArchiveAction buildConfiguration="Release-$flavorName" revealArchiveInOrganizer="YES">
    </ArchiveAction>
 </Scheme>
