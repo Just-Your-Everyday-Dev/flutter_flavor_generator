@@ -1,3 +1,8 @@
+## 0.1.1
+
+- Fixed iOS scheme generation: flavor schemes are now copied from `Runner.xcscheme` instead of a hardcoded template, ensuring correct `BlueprintIdentifier`, up-to-date scheme format, and automatic inheritance of `lldbInitFile` for Flutter debug mode on iOS
+- Added `patchRunnerScheme()` to insert `lldbInitFile` into `Runner.xcscheme` if missing
+
 ## 0.1.0
 
 - Initial release
