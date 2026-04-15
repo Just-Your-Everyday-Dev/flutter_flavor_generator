@@ -11,9 +11,51 @@ class XcschemeGenerator {
       return;
     }
 
+    final runnerScheme = File(path.join(schemesDir, 'Runner.xcscheme'));
+    if (!runnerScheme.existsSync()) {
+      print('Runner.xcscheme not found, cannot generate $flavorName.xcscheme.');
+      return;
+    }
+
+    var content = runnerScheme.readAsStringSync();
+
+    content = content.replaceAll('buildConfiguration="Debug"', 'buildConfiguration="Debug-$flavorName"');
+    content = content.replaceAll('buildConfiguration="Release"', 'buildConfiguration="Release-$flavorName"');
+    content = content.replaceAll('buildConfiguration="Profile"', 'buildConfiguration="Profile-$flavorName"');
+
     Directory(schemesDir).createSync(recursive: true);
-    schemeFile.writeAsStringSync(_template(flavorName));
+    schemeFile.writeAsStringSync(content);
     print('iOS scheme created: $flavorName.xcscheme');
+  }
+
+  /// Patches Runner.xcscheme to add lldbInitFile to LaunchAction and TestAction
+  /// if not already present. Called before generating flavor schemes so copies
+  /// automatically inherit the setting.
+  static void patchRunnerScheme(String xcodeProjectPath) {
+    final schemeFile = File(
+      path.join(xcodeProjectPath, 'xcshareddata', 'xcschemes', 'Runner.xcscheme'),
+    );
+    if (!schemeFile.existsSync()) return;
+
+    var content = schemeFile.readAsStringSync();
+    const lldb = 'lldbInitFile = "\$(SRCROOT)/Flutter/ephemeral/flutter_lldbinit"';
+
+    if (content.contains('lldbInitFile')) {
+      print('Runner.xcscheme already has lldbInitFile, skipping.');
+      return;
+    }
+
+    content = content.replaceFirstMapped(
+      RegExp(r'(<LaunchAction\b[^>]*?)(>)', dotAll: true),
+      (m) => '${m.group(1)}\n      $lldb${m.group(2)}',
+    );
+    content = content.replaceFirstMapped(
+      RegExp(r'(<TestAction\b[^>]*?)(>)', dotAll: true),
+      (m) => '${m.group(1)}\n      $lldb${m.group(2)}',
+    );
+
+    schemeFile.writeAsStringSync(content);
+    print('Runner.xcscheme patched with lldbInitFile.');
   }
 
   static void remove(String xcodeProjectPath, String flavorName) {
@@ -25,74 +67,4 @@ class XcschemeGenerator {
       print('iOS scheme removed: $flavorName.xcscheme');
     }
   }
-
-  static String _template(String flavorName) => '''
-<?xml version="1.0" encoding="UTF-8"?>
-<Scheme LastUpgradeVersion="1510" version="1.3">
-   <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES">
-      <BuildActionEntries>
-         <BuildActionEntry buildForTesting="YES" buildForRunning="YES"
-            buildForProfiling="YES" buildForArchiving="YES" buildForAnalyzing="YES">
-            <BuildableReference
-               BuildableIdentifier="primary"
-               BlueprintIdentifier="97C146ED1CF9000F007C117D"
-               BuildableName="Runner.app"
-               BlueprintName="Runner"
-               ReferencedContainer="container:Runner.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-      </BuildActionEntries>
-   </BuildAction>
-   <TestAction
-      buildConfiguration="Debug-$flavorName"
-      selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB"
-      lldbInitFile = "\$(SRCROOT)/Flutter/ephemeral/flutter_lldbinit"
-      shouldUseLaunchSchemeArgsEnv="YES">
-      <Testables>
-      </Testables>
-   </TestAction>
-   <LaunchAction
-      buildConfiguration="Debug-$flavorName"
-      selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB"
-      lldbInitFile = "\$(SRCROOT)/Flutter/ephemeral/flutter_lldbinit"
-      launchStyle="0"
-      useCustomWorkingDirectory="NO"
-      ignoresPersistentStateOnLaunch="NO"
-      debugDocumentVersioning="YES"
-      debugServiceExtension="internal"
-      allowLocationSimulation="YES">
-      <BuildableProductRunnable runnableDebuggingMode="0">
-         <BuildableReference
-            BuildableIdentifier="primary"
-            BlueprintIdentifier="97C146ED1CF9000F007C117D"
-            BuildableName="Runner.app"
-            BlueprintName="Runner"
-            ReferencedContainer="container:Runner.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-   </LaunchAction>
-   <ProfileAction
-      buildConfiguration="Profile-$flavorName"
-      shouldUseLaunchSchemeArgsEnv="YES"
-      savedToolIdentifier=""
-      useCustomWorkingDirectory="NO"
-      debugDocumentVersioning="YES">
-      <BuildableProductRunnable runnableDebuggingMode="0">
-         <BuildableReference
-            BuildableIdentifier="primary"
-            BlueprintIdentifier="97C146ED1CF9000F007C117D"
-            BuildableName="Runner.app"
-            BlueprintName="Runner"
-            ReferencedContainer="container:Runner.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-   </ProfileAction>
-   <AnalyzeAction buildConfiguration="Debug-$flavorName">
-   </AnalyzeAction>
-   <ArchiveAction buildConfiguration="Release-$flavorName" revealArchiveInOrganizer="YES">
-   </ArchiveAction>
-</Scheme>
-''';
 }

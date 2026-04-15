@@ -83,6 +83,7 @@ void _handleCreate(ConfigManager config, String root) {
 
   GradleGenerator.applyFlavors(gradlePath, flavors);
 
+  XcschemeGenerator.patchRunnerScheme(xcodeProject);
   for (final f in flavors) {
     XcschemeGenerator.generate(xcodeProject, f.name);
   }
@@ -129,6 +130,7 @@ void _handleAddFlavor(ConfigManager config, String root) {
   );
 
   GradleGenerator.applyFlavors(gradlePath, all);
+  XcschemeGenerator.patchRunnerScheme(xcodeProject);
   XcschemeGenerator.generate(xcodeProject, newFlavor.name);
   PbxprojGenerator.applyFlavors(xcodeProject, all);
   RunConfigGenerator.generate(root, newFlavor.name);
