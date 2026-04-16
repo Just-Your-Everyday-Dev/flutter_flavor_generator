@@ -22,7 +22,7 @@ In your Flutter project's `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
-  flutter_flavor_gen: ^0.1.0
+  flutter_flavor_gen: ^0.1.2
 ```
 
 Then run:

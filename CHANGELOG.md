@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Added dartdoc comments to all public API elements
+
 ## 0.1.1
 
 - Fixed iOS scheme generation: flavor schemes are now copied from `Runner.xcscheme` instead of a hardcoded template, ensuring correct `BlueprintIdentifier`, up-to-date scheme format, and automatic inheritance of `lldbInitFile` for Flutter debug mode on iOS
